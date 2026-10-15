@@ -27,17 +27,9 @@ The consumer service of the CoreBanking project. It reads notification messages 
 
 # 🏗 Architecture | معماری
 
-![Architecture diagram](docs/diagram.jpg)
+![Architecture diagram](diagram.jpg)
 
 [Open the interactive diagram | باز کردن نمودار تعاملی](https://zahrasalimzadeh.github.io/NotificationMicroservice/diagram.html)
-
-```mermaid
-flowchart LR
-    A["CoreBanking (Producer)"] -->|publish| B["RabbitMQ: notification-exchange (direct)"]
-    B -->|routing key: notification| C[("notification-queue")]
-    C -->|consume| D["NotificationMicroservice (Consumer)"]
-    D -->|HTTP| E["sms.ir"]
-```
 
 1. CoreBanking publishes a message (`phone`, `content`) to `notification-exchange`.
 2. The direct exchange routes it with the key `notification` to `notification-queue`.
@@ -94,13 +86,15 @@ NotificationMicroservice/
 │       └── sms_service.py
 │
 ├── docs/
-│   ├── diagram.html
-│   ├── diagram.jpg
-│   └── images/
+│   └── diagram.html
 │
 ├── .env.example
 ├── .gitignore
+├── diagram.jpg
 ├── main.py
+├── rabbitmq-idle.png
+├── queue-ready.png
+├── queue-empty.png.jpg
 └── requirements.txt
 ```
 
@@ -175,17 +169,17 @@ The service keeps running and waits for new messages. Start CoreBanking and log 
 **1. RabbitMQ is running and no queue exists yet. The queue is created automatically when the application starts.**
 RabbitMQ روشن است و هنوز صفی وجود ندارد. صف به صورت خودکار هنگام اجرای برنامه ساخته می‌شود.
 
-![RabbitMQ idle](docs/images/rabbitmq-idle.png)
+![RabbitMQ idle](rabbitmq-idle.png)
 
 **2. A message is waiting in `notification-queue` (consumer stopped).**
 یک پیام در `notification-queue` منتظر است (Consumer خاموش).
 
-![Queue with a waiting message](docs/images/queue-ready.png)
+![Queue with a waiting message](queue-ready.png)
 
 **3. The consumer is connected (Consumers: 1) and the queue is empty after the message was processed.**
 Consumer به صف وصل است (Consumers: 1) و صف بعد از پردازش پیام خالی است.
 
-![Queue empty](docs/images/queue-empty_png.jpg)
+![Queue empty](queue-empty.png.jpg)
 
 ---
 
@@ -196,12 +190,3 @@ Consumer به صف وصل است (Consumers: 1) و صف بعد از پردازش
 
 - برای ارسال واقعی پیامک، حساب sms.ir باید اعتبار کافی داشته باشد. بدون اعتبار، sms.ir کد `102` (اعتبار کافی نیست) برمی‌گرداند، ولی مسیر RabbitMQ همچنان درست کار می‌کند.
 - نام Exchange و Queue باید در CoreBanking و در این سرویس یکسان باشد.
-
----
-
-# 👩‍💻 Developer | توسعه‌دهنده
-
-**Zahra Salimzadeh**
-
-- LinkedIn: <https://www.linkedin.com/in/zahra-salimzadeh-5767582ab/>
-- Email: <zahrasalimzadeh7@gmail.com>
