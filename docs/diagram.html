@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مسیر پیام | CoreBanking و RabbitMQ</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f7f8fc;--card:#fff;--ink:#12152b;--mut:#5f6585;--line:#d8dbec;--s:#6d3fd6;--p:#0b8f87;--u:#c97800;--sb:#ece6fb;--pb:#dcf3f0;--ub:#fbeccf;--xb:#f1eee6;--ok:#0f8a5f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0c0e1b;--card:#161a33;--ink:#eceefc;--mut:#9aa0c6;--line:#2a2f52;--s:#b69cff;--p:#4fd8cd;--u:#ffbe55;--sb:#241d44;--pb:#12302f;--ub:#3a2c10;--xb:#26241d;--ok:#4fd8a0}}
+:root[data-theme="dark"]{--paper:#0c0e1b;--card:#161a33;--ink:#eceefc;--mut:#9aa0c6;--line:#2a2f52;--s:#b69cff;--p:#4fd8cd;--u:#ffbe55;--sb:#241d44;--pb:#12302f;--ub:#3a2c10;--xb:#26241d;--ok:#4fd8a0}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;overflow:hidden;background:var(--paper);background-image:radial-gradient(var(--line) 1px,transparent 1.3px);background-size:20px 20px;color:var(--ink);font-family:"Vazirmatn",Tahoma,sans-serif;line-height:1.9}
+.wrap{max-width:1500px;height:100%;box-sizing:border-box;margin:0 auto;padding:8px 16px 10px;display:flex;flex-direction:column;gap:8px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex:none}
+.tt{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.en{direction:ltr;unicode-bidi:isolate;font-family:"DM Serif Display",Georgia,serif;font-weight:400}
+h1{margin:0;font-size:.9rem;font-weight:600;color:var(--mut)}
+.title{font-size:2rem;line-height:1;display:block;margin:0}
+.scroll{flex:1 1 0;min-height:0;display:flex;align-items:center}
+svg{width:100%;height:auto;max-height:100%;display:block}
+.t0{font:800 15px Vazirmatn,sans-serif;fill:var(--ink)}
+.t1{font:800 13px Vazirmatn,sans-serif;fill:var(--ink)}
+.t2{font:400 10.5px Vazirmatn,sans-serif;fill:var(--mut)}
+.fa{direction:rtl;unicode-bidi:isolate}
+/* halos */
+.halo{fill:none;stroke:var(--glow);stroke-width:7;opacity:0;transition:opacity .35s}
+.halo.on{opacity:.38;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.14}}
+/* wires */
+.wg{opacity:.28;transition:opacity .4s}
+.wg.on{opacity:1}
+.wl{stroke:var(--c);fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:6 7}
+.hd{stroke:var(--c);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.wg.on .wl{animation:flow 1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-13}}
+/* movers */
+.m{transition-property:transform,opacity;transition-timing-function:ease-in-out;transition-duration:0ms}
+.mi{transform-box:fill-box;transform-origin:center}
+.pop{animation:pop .45s ease-out}
+@keyframes pop{0%{transform:scale(.3)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+#pm.walk #pmb{animation:bob .32s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-3px)}}
+#bell{transform-box:fill-box;transform-origin:50% 0}
+#bell.ring{animation:ring .9s ease-in-out}
+@keyframes ring{0%,100%{transform:rotate(0)}20%{transform:rotate(18deg)}40%{transform:rotate(-15deg)}60%{transform:rotate(10deg)}80%{transform:rotate(-5deg)}}
+#phone{transform-box:fill-box;transform-origin:center}
+#phone.vib{animation:vib .55s}
+@keyframes vib{0%,100%{transform:translate(0) rotate(0)}15%{transform:translate(-3px,0) rotate(-5deg)}35%{transform:translate(3px,0) rotate(5deg)}55%{transform:translate(-2px,0) rotate(-3deg)}75%{transform:translate(2px,0) rotate(3deg)}}
+#btn{transform-box:fill-box;transform-origin:center}
+#btn.press{animation:press .5s}
+@keyframes press{40%{transform:scale(.88)}100%{transform:scale(1)}}
+/* panel */
+.panel{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:8px 18px;height:clamp(150px,24dvh,230px);overflow:auto;flex:none}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{background:var(--sb);color:var(--s);font-weight:800;font-size:.82rem;border-radius:999px;padding:1px 12px}
+.dots{display:flex;gap:6px}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s}
+.dots i.done{background:var(--p)}
+.dots i.cur{background:var(--u);transform:scale(1.4)}
+h2{margin:4px 0 0;font-size:clamp(1.05rem,1.6vw,1.4rem)}
+.panel p{margin:2px 0 0;font-size:clamp(.9rem,1.35vw,1.2rem)}
+.ctl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;flex:none}
+button{font:inherit;font-weight:600;border:0;background:var(--s);color:#fff;border-radius:14px;padding:8px 22px;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+button.alt{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+button:focus-visible{outline:3px solid var(--s);outline-offset:2px}
+#hint{color:var(--mut);font-size:.85rem}
+.seg{display:flex;border:2px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card);direction:ltr}
+.seg button{background:transparent;color:var(--ink);border-radius:0;padding:4px 18px;font-size:.9rem}
+.seg button.on{background:var(--s);color:#fff}
+body[data-l=en] .en{font-family:inherit;font-weight:700}
+body[data-l=en] .title.en{font-family:"DM Serif Display",Georgia,serif;font-weight:400}
+body[data-l=en] .fa{direction:ltr}
+@media (max-height:520px){h1{display:none}.title{font-size:1.3rem}.panel{height:clamp(96px,34dvh,150px);padding:4px 12px}.panel p{font-size:.78rem;line-height:1.5}h2{font-size:.9rem}button{padding:5px 16px}}
+@media (prefers-reduced-motion:reduce){.halo.on,.wg.on .wl,#pm.walk #pmb,#bell.ring,#phone.vib,#btn.press,.pop{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><div class="tt"><span class="title en">Architecture</span><h1 id="h1"></h1></div><div class="seg" role="group" aria-label="Language"><button data-lang="fa">فارسی</button><button data-lang="en">English</button></div></div>
+
+<div class="scroll">
+<svg id="svg" viewBox="8 56 1228 322" role="img" aria-label="مسیر پیام از CoreBanking به RabbitMQ، Exchange، Queue، Notification، sms.ir و گوشی کاربر">
+
+<!-- RabbitMQ container -->
+<rect id="h_rmq" class="halo" style="--glow:var(--u)" x="244" y="64" width="422" height="307" rx="26"/>
+<rect x="250" y="70" width="410" height="295" rx="22" fill="var(--ub)" fill-opacity=".45" stroke="var(--u)" stroke-width="2" stroke-dasharray="7 6"/>
+<ellipse cx="414" cy="86" rx="3" ry="8" fill="var(--u)"/><ellipse cx="423" cy="86" rx="3" ry="8" fill="var(--u)"/><circle cx="418.5" cy="98" r="8" fill="var(--u)"/>
+<text class="t0" x="472" y="104" text-anchor="middle">RabbitMQ</text>
+
+<!-- CoreBanking app -->
+<g transform="translate(20,160)">
+ <rect id="h_app" class="halo" style="--glow:var(--s)" x="-5" y="-5" width="170" height="160" rx="18"/>
+ <rect width="160" height="150" rx="14" fill="var(--card)" stroke="var(--s)" stroke-width="2"/>
+ <path d="M0 14A14 14 0 0 1 14 0H146A14 14 0 0 1 160 14V28H0Z" fill="var(--sb)"/>
+ <circle cx="16" cy="14" r="4" fill="var(--s)" opacity=".5"/><circle cx="30" cy="14" r="4" fill="var(--s)" opacity=".5"/><circle cx="44" cy="14" r="4" fill="var(--s)" opacity=".5"/>
+ <rect x="24" y="46" width="112" height="14" rx="7" fill="var(--line)"/>
+ <rect x="24" y="68" width="112" height="14" rx="7" fill="var(--line)"/>
+ <circle cx="35" cy="53" r="3" fill="var(--mut)"/>
+ <circle cx="35" cy="75" r="2.5" fill="var(--mut)"/><circle cx="43" cy="75" r="2.5" fill="var(--mut)"/><circle cx="51" cy="75" r="2.5" fill="var(--mut)"/>
+ <g id="btn"><rect x="24" y="96" width="112" height="28" rx="14" fill="var(--s)"/><text class="t1 fa" x="80" y="115" text-anchor="middle" style="fill:#fff" data-k="login">ورود</text></g>
+</g>
+<text class="t1" x="100" y="334" text-anchor="middle">CoreBanking</text>
+<text class="t2" x="100" y="350" text-anchor="middle">Producer</text>
+<text class="t2 fa" x="100" y="366" text-anchor="middle" data-k="app">اپلیکیشن بانکی</text>
+
+<!-- Exchange (post office) -->
+<rect id="h_ex" class="halo" style="--glow:var(--p)" x="264" y="139" width="142" height="202" rx="20"/>
+<rect x="270" y="145" width="130" height="190" rx="16" fill="var(--pb)" stroke="var(--p)" stroke-width="2"/>
+<path d="M262 152L335 116L408 152Z" fill="var(--p)" opacity=".85" stroke="var(--p)" stroke-width="2" stroke-linejoin="round"/>
+<rect x="264" y="228" width="14" height="18" rx="3" fill="var(--p)"/>
+<text class="t1" x="335" y="177" text-anchor="middle">Exchange</text>
+<text class="t2" x="335" y="193" text-anchor="middle">direct</text>
+<text class="t2 fa" x="335" y="327" text-anchor="middle" data-k="pm">پستچی</text>
+
+<!-- Queue -->
+<rect id="h_q" class="halo" style="--glow:var(--p)" x="434" y="205" width="222" height="62" rx="16"/>
+<rect x="440" y="211" width="210" height="50" rx="12" fill="var(--card)" stroke="var(--p)" stroke-width="2"/>
+<g fill="var(--pb)" stroke="var(--line)" stroke-dasharray="3 3">
+ <rect x="450" y="219" width="34" height="34" rx="7"/><rect x="489" y="219" width="34" height="34" rx="7"/><rect x="528" y="219" width="34" height="34" rx="7"/><rect x="567" y="219" width="34" height="34" rx="7"/><rect x="606" y="219" width="34" height="34" rx="7"/>
+</g>
+<text class="t1" x="545" y="292" text-anchor="middle" transform="translate(0,0)">Queue</text>
+<text class="t2" x="520" y="308" text-anchor="middle">notification-queue</text>
+<text id="qc" class="t2 fa" x="545" y="342" text-anchor="middle">صف خالیه</text>
+
+<!-- Notification -->
+<rect id="h_n" class="halo" style="--glow:var(--s)" x="694" y="149" width="182" height="172" rx="22"/>
+<rect x="700" y="155" width="170" height="160" rx="16" fill="var(--sb)" stroke="var(--s)" stroke-width="2"/>
+<text class="t1" x="785" y="186" text-anchor="middle">Notification</text>
+<text class="t2" x="785" y="202" text-anchor="middle">Consumer</text>
+<g transform="translate(824,262)"><g id="bell"><path d="M-14 10H14C10 5 9 1 9 -7A9 9 0 0 0 -9 -7C-9 1 -10 5 -14 10Z" fill="var(--s)"/><circle cy="14" r="3.5" fill="var(--s)"/><circle cy="-17" r="2.5" fill="var(--s)"/></g></g>
+
+<!-- sms.ir -->
+<g transform="translate(260,-195)">
+<rect id="h_s" class="halo" style="--glow:var(--mut)" x="694" y="394" width="182" height="74" rx="20"/>
+<rect x="700" y="400" width="170" height="62" rx="14" fill="var(--xb)" stroke="var(--mut)" stroke-width="2"/>
+<text class="t1" x="785" y="428" text-anchor="middle">sms.ir</text>
+<text class="t2" x="785" y="445" text-anchor="middle">External service</text>
+</g>
+
+<!-- phone -->
+<g transform="translate(278,-195)">
+<rect id="h_p" class="halo" style="--glow:var(--ok)" x="886" y="379" width="64" height="104" rx="16"/>
+<g id="phone">
+ <rect x="892" y="385" width="52" height="92" rx="10" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>
+ <rect x="898" y="397" width="40" height="64" rx="4" fill="var(--sb)"/>
+ <rect x="911" y="389" width="14" height="3" rx="1.5" fill="var(--ink)"/>
+ <circle cx="918" cy="469" r="2.5" fill="var(--ink)"/>
+</g>
+<text class="t2 fa" x="918" y="496" text-anchor="middle" data-k="user">کاربر</text></g>
+
+<!-- wires -->
+<g id="w1" class="wg" style="--c:var(--s)"><path class="wl" d="M180 236H258"/><path class="hd" d="M250 230L258 236L250 242"/></g>
+<g id="w2" class="wg" style="--c:var(--p)"><path class="wl" d="M400 236H438"/><path class="hd" d="M430 230L438 236L430 242"/></g>
+<g id="w3" class="wg" style="--c:var(--p)"><path class="wl" d="M650 236H698"/><path class="hd" d="M690 230L698 236L690 242"/></g>
+<g id="w4" class="wg" style="--c:var(--u)"><path class="wl" d="M872 222H956"/><path class="hd" d="M948 216L956 222L948 228"/></g>
+<g id="w5" class="wg" style="--c:var(--ok)"><path class="wl" d="M956 262H872"/><path class="hd" d="M880 256L872 262L880 268"/></g>
+<g id="w6" class="wg" style="--c:var(--u)"><path class="wl" d="M1134 236H1160"/><path class="hd" d="M1152 230L1160 236L1152 242"/></g>
+<text class="t2" x="914" y="210" text-anchor="middle">HTTP</text>
+<text class="t2" x="914" y="284" text-anchor="middle">200 OK</text>
+
+<!-- routing-key tag -->
+<g class="m" id="eTag" style="opacity:0"><g class="mi"><rect x="-42" y="-9" width="84" height="18" rx="9" fill="var(--u)"/><text x="0" y="3.5" text-anchor="middle" fill="#fff" style="font:700 9.5px Vazirmatn,sans-serif">notification</text></g></g>
+
+<!-- unacked ghost -->
+<g class="m" id="eGh" style="opacity:0"><g class="mi"><rect x="-15" y="-11" width="30" height="22" rx="3" fill="none" stroke="var(--u)" stroke-width="1.5" stroke-dasharray="3 3"/><path d="M-15 -11L0 2L15 -11" fill="none" stroke="var(--u)" stroke-width="1.5" stroke-dasharray="3 3"/><text x="0" y="26" text-anchor="middle" style="font:400 9px Vazirmatn,sans-serif;fill:var(--u)">unacked</text></g></g>
+
+<!-- postman -->
+<g class="m" id="pm"><g id="pmf"><g id="pmb">
+ <rect x="-7" y="-16" width="5.5" height="16" rx="2.5" fill="#2b2f55"/><rect x="1.5" y="-16" width="5.5" height="16" rx="2.5" fill="#2b2f55"/>
+ <rect x="-11" y="-36" width="22" height="24" rx="7" fill="var(--s)"/>
+ <path d="M-9 -33L9 -16" stroke="var(--u)" stroke-width="3" stroke-linecap="round"/>
+ <rect x="6" y="-25" width="11" height="13" rx="2.5" fill="var(--u)"/>
+ <path d="M9 -30L18 -25" stroke="var(--s)" stroke-width="4.5" stroke-linecap="round"/>
+ <circle cx="19" cy="-24.5" r="3" fill="#f2c9a0"/>
+ <circle cx="0" cy="-45" r="8.5" fill="#f2c9a0"/>
+ <path d="M-9 -47A9 9 0 0 1 9 -47Z" fill="var(--u)"/><rect x="-1" y="-49" width="13" height="3" rx="1.5" fill="var(--u)"/>
+ <circle cx="3" cy="-44" r="1.2" fill="#12152b"/>
+ <path d="M0 -40Q3 -38 6 -40" stroke="#12152b" fill="none" stroke-width="1.2" stroke-linecap="round"/>
+</g></g></g>
+
+<!-- messages -->
+<g class="m" id="m1" style="opacity:0"><g class="mi"><rect x="-15" y="-11" width="30" height="22" rx="3" fill="var(--ub)" stroke="var(--ink)" stroke-width="1.5"/><path d="M-15 -11L0 2L15 -11" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/><circle cy="6" r="6" fill="var(--ink)"/><text y="9" text-anchor="middle" style="font:800 8px Vazirmatn,sans-serif;fill:var(--paper)">1</text></g></g>
+<g class="m" id="m2" style="opacity:0"><g class="mi"><rect x="-15" y="-11" width="30" height="22" rx="3" fill="var(--pb)" stroke="var(--ink)" stroke-width="1.5"/><path d="M-15 -11L0 2L15 -11" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/><circle cy="6" r="6" fill="var(--ink)"/><text y="9" text-anchor="middle" style="font:800 8px Vazirmatn,sans-serif;fill:var(--paper)">2</text></g></g>
+<g class="m" id="m3" style="opacity:0"><g class="mi"><rect x="-15" y="-11" width="30" height="22" rx="3" fill="var(--sb)" stroke="var(--ink)" stroke-width="1.5"/><path d="M-15 -11L0 2L15 -11" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/><circle cy="6" r="6" fill="var(--ink)"/><text y="9" text-anchor="middle" style="font:800 8px Vazirmatn,sans-serif;fill:var(--paper)">3</text></g></g>
+
+<!-- sms bubble, 200 OK, ack -->
+<g class="m" id="eS" style="opacity:0"><g class="mi"><rect x="-18" y="-11" width="36" height="22" rx="6" fill="var(--s)"/><path d="M-8 11L-11 17L-1 11Z" fill="var(--s)"/><text id="smst" x="0" y="3.5" text-anchor="middle" fill="#fff" style="font:800 8.5px Vazirmatn,sans-serif">48213</text></g></g>
+<g class="m" id="eOk" style="opacity:0"><g class="mi"><rect x="-23" y="-8" width="46" height="16" rx="8" fill="var(--ok)"/><text x="0" y="3.3" text-anchor="middle" fill="#fff" style="font:800 9px Vazirmatn,sans-serif">200 OK</text></g></g>
+<g class="m" id="eAck" style="opacity:0"><g class="mi"><rect x="-36" y="-8" width="72" height="16" rx="8" fill="var(--ok)"/><text x="0" y="3.3" text-anchor="middle" fill="#fff" style="font:800 9px Vazirmatn,sans-serif">basic_ack</text></g></g>
+</svg>
+</div>
+
+<section class="panel" aria-live="polite">
+ <div class="meta"><span class="badge" id="badge"></span><div class="dots" id="dots"></div></div>
+ <h2 id="ttl"></h2>
+ <p id="txt"></p>
+</section>
+<div class="ctl">
+ <button id="nx"></button>
+ <button id="rs" class="alt">↺ از اول</button>
+ <span id="hint"></span>
+</div>
+</div>
+
+<script>
+var $=function(id){return document.getElementById(id)};
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function put(el,x,y){el.style.transitionDuration='0ms';el.style.transform='translate('+x+'px,'+y+'px)';void el.getBoundingClientRect();}
+function mv(el,x,y,ms){el.style.transitionDuration=ms+'ms';el.style.transform='translate('+x+'px,'+y+'px)';return wait(ms+30);}
+function vis(el,v,ms){el.style.transitionDuration=(ms||0)+'ms';el.style.opacity=v;}
+function pop(el){var i=el.firstElementChild;i.classList.remove('pop');void i.getBoundingClientRect();i.classList.add('pop');}
+function kick(el,c){el.classList.remove(c);void el.getBoundingClientRect();el.classList.add(c);}
+function fa(n){return lang=='fa'?n.toLocaleString('fa-IR'):String(n)}
+
+var M=[$('m1'),$('m2'),$('m3')],codes=['48213','73190','20654'];
+var ePm=$('pm'),eTag=$('eTag'),eGh=$('eGh'),eS=$('eS'),eOk=$('eOk'),eAck=$('eAck'),qc=$('qc');
+var halos=['h_app','h_rmq','h_ex','h_q','h_n','h_s','h_p'],wires=['w1','w2','w3','w4','w5','w6'];
+var qItems=[],pmBack=Promise.resolve(),cur=0,busy=false;
+var HX=335,HY=308;
+function qx(p){return 623-39*p}
+function act(){var a=[].slice.call(arguments);halos.forEach(function(h){$(h).classList.toggle('on',a.indexOf(h)>-1)})}
+function wire(){var a=[].slice.call(arguments);wires.forEach(function(w){$(w).classList.toggle('on',a.indexOf(w)>-1)})}
+function face(d){$('pmf').style.transform='scale('+d+',1)'}
+var unN=0;function setCount(un){unN=un||0;var n=qItems.length,L=T[lang],t=n?fa(n)+L.wait:L.empty;if(un)t+=' · '+fa(un)+L.proc;qc.textContent=t}
+
+/* ---------- stages ---------- */
+function spawn(m){put(m,205,236);vis(m,1);pop(m);}
+async function send(m,f){wire('w1');act('h_rmq');await mv(m,HX,236,1200*f);wire();}
+async function carry(m,f){
+ await pmBack;
+ vis(eTag,0,300);act('h_ex','h_q');
+ ePm.classList.add('walk');face(1);
+ await mv(m,HX+26,HY-27,400*f);
+ wire('w2');
+ await Promise.all([mv(ePm,420,HY,800*f),mv(m,446,HY-27,800*f)]);
+ ePm.classList.remove('walk');
+ qItems.push(m);var p=qItems.length-1;
+ await mv(m,452,236,400*f);
+ await mv(m,qx(p),236,Math.abs(qx(p)-452)*4*f);
+ setCount();
+ face(-1);ePm.classList.add('walk');
+ pmBack=mv(ePm,HX,HY,800*f).then(function(){ePm.classList.remove('walk');face(1);});
+}
+async function take(m,f){
+ qItems.shift();setCount(1);
+ vis(eGh,.9,300);put(eGh,623,290);
+ act('h_q','h_n');wire('w3');
+ var jobs=[(async function(){await mv(m,655,236,350*f);await mv(m,738,262,650*f);})()];
+ qItems.forEach(function(mm,p){jobs.push(mv(mm,qx(p),236,700*f))});
+ await Promise.all(jobs);
+ wire();kick($('bell'),'ring');
+}
+async function http(m,f){
+ act('h_n','h_s');wire('w4');
+ await mv(m,914,222,600*f);await mv(m,990,236,500*f);wire();
+}
+async function sms(m,i,f){
+ act('h_s','h_p');wire('w6');
+ $('smst').textContent=codes[i];
+ vis(eS,0);put(eS,1136,236);vis(eS,1,150);pop(eS);
+ vis(m,0,400);
+ await mv(eS,1196,236,800*f);
+ kick($('phone'),'vib');
+ wire('w5');
+ put(eOk,945,262);vis(eOk,1,150);pop(eOk);
+ await mv(eOk,898,262,700*f);
+ vis(eOk,0,500);wire();
+}
+async function ack(m,f){
+ act('h_q','h_n');
+ put(eAck,740,262);vis(eAck,1,150);pop(eAck);
+ await mv(eAck,623,292,800*f);
+ vis(eAck,0,500);vis(eGh,0,500);setCount(0);
+ await wait(550);act();
+}
+
+/* ---------- steps ---------- */
+var E=function(s){return '<span class="en">'+s+'</span>'};
+var steps=[
+ {t:'کاربر لاگین می‌کنه',
+  d:'کاربر توی '+E('CoreBanking')+' لاگین می‌کنه و دکمه‌ی ورود رو می‌زنه. حالا اپلیکیشن باید یه کد '+E('OTP')+' براش پیامک کنه، پس یه پیام (این نامه‌ی کوچولو) می‌سازه. چون این اپلیکیشن پیام تولید می‌کنه بهش می‌گیم '+E('Producer')+'.',
+  run:async function(){act('h_app');kick($('btn'),'press');await wait(550);spawn(M[0]);await wait(900);}},
+ {t:'تحویل به RabbitMQ',
+  d:E('CoreBanking')+' خودش سراغ پیامک نمی‌ره. فقط پیام رو می‌ندازه تو '+E('RabbitMQ')+' و کارش تمومه. نمی‌دونه کی قراره این پیام رو بخونه. نتیجه‌ش اینه که اگه بخش پیامک کند بشه یا خاموش باشه، لاگین کاربر معطل نمی‌مونه.',
+  run:async function(){await send(M[0],1);}},
+ {t:'پستچی برچسب رو می‌خونه',
+  d:'اولین کسی که تو '+E('RabbitMQ')+' پیام رو تحویل می‌گیره '+E('Exchange')+' هست، که مثل یه پستچیه. روی نامه یه برچسب هست به اسم '+E('routing key')+' با مقدار '+E('notification')+'. پستچی تو دفترش ('+E('binding')+') نگاه می‌کنه و می‌فهمه این نامه باید بره تو '+E('notification-queue')+'. چون نوعش '+E('direct')+' هست، فقط وقتی کلید دقیقاً یکی باشه نامه رو می‌رسونه.',
+  run:async function(){act('h_ex','h_rmq');wire('w2');put(eTag,HX,211);vis(eTag,1);pop(eTag);await wait(1600);wire();}},
+ {t:'پستچی نامه رو می‌ذاره تو صف',
+  d:'پستچی نامه رو برمی‌داره، می‌بره و می‌ندازه تو '+E('Queue')+'. صف مثل یه صف واقعیه: پیام می‌شینه تا نوبتش بشه و هر کی زودتر رسیده زودتر هم خارج می‌شه ('+E('FIFO')+'). تا وقتی کسی برش نداره، پیام همین‌جا امن می‌مونه.',
+  run:async function(){await carry(M[0],1);await pmBack;act('h_q');wire();await wait(500);}},
+ {t:'صف کم‌کم پر می‌شه',
+  d:'چند تا کاربر دیگه هم لاگین می‌کنن و پیام‌هاشون با همین مسیر پشت سر هم تو صف ردیف می‌شن. اگه '+E('Notification')+' کندتر از '+E('CoreBanking')+' کار کنه یا خاموش باشه، صف همین‌طور پر می‌شه، ولی هیچ پیامی گم نمی‌شه.',
+  run:async function(){
+   for(var i=1;i<3;i++){spawn(M[i]);await send(M[i],.5);await carry(M[i],.55);}
+   await pmBack;act('h_q');wire();await wait(500);}},
+ {t:'Notification اولین پیام رو برمی‌داره',
+  d:E('Notification')+' یه '+E('Consumer')+' هست که به صف وصله و منتظر پیام می‌مونه. اولین پیام (قدیمی‌ترین) رو برمی‌داره و بقیه یه قدم جلو میان. پیام تو '+E('RabbitMQ')+' هنوز با وضعیت '+E('unacked')+' می‌مونه، یعنی «داره پردازش می‌شه ولی هنوز تأیید نشده».',
+  run:async function(){await take(M[0],1);await wait(400);}},
+ {t:'درخواست HTTP به sms.ir',
+  d:E('Notification')+' خودش پیامک نمی‌فرسته. با یه درخواست '+E('HTTP')+' به سرویس بیرونی '+E('sms.ir')+' می‌گه این کد رو برای شماره‌ی کاربر پیامک کن.',
+  run:async function(){await http(M[0],1);await wait(400);}},
+ {t:'پیامک به گوشی می‌رسه',
+  d:E('sms.ir')+' پیامک رو برای گوشی کاربر می‌فرسته و جواب '+E('200 OK')+' رو برمی‌گردونه به '+E('Notification')+'، یعنی «کار انجام شد».',
+  run:async function(){await sms(M[0],0,1);await wait(300);}},
+ {t:'تأیید و پاک شدن پیام',
+  d:'حالا که '+E('Notification')+' مطمئنه پیامک رفته، یه '+E('basic_ack')+' برای '+E('RabbitMQ')+' می‌فرسته و '+E('RabbitMQ')+' پیام رو برای همیشه پاک می‌کنه. اگه '+E('Notification')+' قبل از ack از کار می‌افتاد، پیام دوباره برمی‌گشت تو صف و یکی دیگه برش می‌داشت. برای همین پیام‌ها گم نمی‌شن.',
+  run:async function(){await ack(M[0],1);}},
+ {t:'بقیه‌ی پیام‌ها',
+  d:'همین چرخه برای پیام‌های بعدی هم تکرار می‌شه تا صف خالی بشه. خلاصه: '+E('CoreBanking')+' فقط پیام می‌ندازه، '+E('RabbitMQ')+' نگهشون می‌داره و مرتب می‌رسونه، و '+E('Notification')+' هر وقت آماده بود پیامک می‌فرسته.',
+  run:async function(){
+   var rest=qItems.slice();
+   for(var i=0;i<rest.length;i++){var m=rest[i];await take(m,.6);await http(m,.6);await sms(m,M.indexOf(m),.6);await ack(m,.6);}
+   act();wire();setCount();}}
+];
+
+/* ---------- i18n + UI ---------- */
+var lang='fa';
+var EN=[
+ {t:'The user logs in',d:'The user logs in to '+E('CoreBanking')+' and taps the login button. The app now has to text an '+E('OTP')+' code, so it creates a message (this little letter). Because the app produces messages, we call it the '+E('Producer')+'.'},
+ {t:'Handing off to RabbitMQ',d:E('CoreBanking')+" doesn't send the SMS itself. It just drops the message into "+E('RabbitMQ')+" and is done. It doesn't know who will read it or when. So if the SMS part is slow or down, the user's login isn't left waiting."},
+ {t:'The postman reads the label',d:'The first to receive the message inside '+E('RabbitMQ')+' is the '+E('Exchange')+', which works like a postman. The letter carries a label called a '+E('routing key')+' with the value '+E('notification')+'. The postman checks his book (the '+E('binding')+') and learns it belongs in '+E('notification-queue')+'. Since the type is '+E('direct')+', he only delivers when the key matches exactly.'},
+ {t:'The postman drops it in the queue',d:'The postman carries the letter over and drops it into the '+E('Queue')+'. It works like a real queue: the message waits for its turn, first come, first served ('+E('FIFO')+'). Until someone picks it up, it stays safe right here.'},
+ {t:'The queue slowly fills up',d:'A few more users log in and their messages line up behind the first one the same way. If '+E('Notification')+' is slower than '+E('CoreBanking')+' or goes down, the queue just keeps growing, but no message is lost.'},
+ {t:'Notification takes the first message',d:E('Notification')+' is a '+E('Consumer')+' connected to the queue, waiting for messages. It takes the first (oldest) one and the rest move up a spot. In '+E('RabbitMQ')+' the message stays '+E('unacked')+', meaning “being processed, not confirmed yet”.'},
+ {t:'HTTP request to sms.ir',d:E('Notification')+" doesn't send SMS itself. It makes an "+E('HTTP')+' request to the external service '+E('sms.ir')+", asking it to text this code to the user's number."},
+ {t:'The SMS reaches the phone',d:E('sms.ir')+" sends the SMS to the user's phone and replies "+E('200 OK')+' to '+E('Notification')+', meaning “done”.'},
+ {t:'Ack and the message is deleted',d:'Once '+E('Notification')+' is sure the SMS went out, it sends a '+E('basic_ack')+' to '+E('RabbitMQ')+', which deletes the message for good. If '+E('Notification')+' crashed before the ack, the message would return to the queue and another consumer would pick it up. That is why messages never get lost.'},
+ {t:'The remaining messages',d:'The same cycle repeats for the other messages until the queue is empty. In short: '+E('CoreBanking')+' only drops messages off, '+E('RabbitMQ')+' keeps them and delivers them in order, and '+E('Notification')+' sends SMS whenever it is ready.'}
+];
+var T={
+fa:{doc:'مسیر پیام | CoreBanking و RabbitMQ',h1:'پیام OTP چه مسیری رو می‌ره؟',start:'شروع',go:'شروع ▶',nx:'مرحله بعد ⏭',again:'از اول ↺',done:'تموم شد.',next:'بعدی: ',reset:'↺ از اول',lg:'English',wait:' پیام منتظره',empty:'صف خالیه',proc:' در حال پردازش',login:'ورود',app:'اپلیکیشن بانکی',pm:'پستچی',user:'کاربر',
+ aria:'مسیر پیام از CoreBanking به RabbitMQ، Exchange، Queue، Notification، sms.ir و گوشی کاربر',
+ intro:'اینجا یه اپلیکیشن بانکی داریم به اسم '+E('CoreBanking')+'. وقتی کاربر لاگین می‌کنه باید یه کد '+E('OTP')+' براش پیامک بشه. بیا قدم‌به‌قدم ببینیم این پیام چطوری از اپلیکیشن می‌رسه به گوشی کاربر. هر بار «مرحله بعد» رو بزنی، یه قدم جلو می‌ریم.'},
+en:{doc:'Message path | CoreBanking & RabbitMQ',h1:'What path does the OTP message take?',start:'Start',go:'Start ▶',nx:'Next step ⏭',again:'Restart ↺',done:'All done.',next:'Next: ',reset:'↺ Restart',lg:'فارسی',wait:' waiting',empty:'Queue is empty',proc:' processing',login:'Login',app:'Banking app',pm:'Postman',user:'User',
+ aria:"Message path from CoreBanking through RabbitMQ, Exchange, Queue, Notification and sms.ir to the user's phone",
+ intro:'We have a banking app called '+E('CoreBanking')+'. When a user logs in, an '+E('OTP')+' code has to be sent to them by SMS. Let us follow the message step by step from the app to the phone. Each time you press “Next step”, we move one step forward.'}
+};
+var dotsEl=$('dots');
+steps.forEach(function(){dotsEl.appendChild(document.createElement('i'))});
+function showStep(n){
+ var s=steps[n-1],f=lang=='fa';
+ $('badge').textContent=f?'مرحله '+fa(n)+' از '+fa(steps.length):'Step '+n+' of '+steps.length;
+ if(f)$('ttl').innerHTML=s.t.replace(/([A-Za-z.]+)/g,'<span class="en">$1</span>');else $('ttl').textContent=EN[n-1].t;
+ $('txt').innerHTML=f?s.d:EN[n-1].d;
+ [].forEach.call(dotsEl.children,function(d,i){d.className=i<n-1?'done':(i==n-1?'cur':'')});
+}
+function showIntro(){
+ $('badge').textContent=T[lang].start;
+ $('ttl').textContent=T[lang].h1;
+ $('txt').innerHTML=T[lang].intro;
+ [].forEach.call(dotsEl.children,function(d){d.className=''});
+}
+function setBtn(){
+ var nx=$('nx'),t=T[lang];
+ if(cur==0){nx.textContent=t.go;$('hint').textContent='';}
+ else if(cur<steps.length){nx.textContent=t.nx;$('hint').textContent=t.next+(lang=='fa'?steps[cur].t:EN[cur].t);}
+ else{nx.textContent=t.again;$('hint').textContent=t.done;}
+}
+function applyLang(){
+ var t=T[lang],d=document.documentElement;
+ d.lang=lang;d.dir=lang=='fa'?'rtl':'ltr';document.body.dataset.l=lang;document.title=t.doc;
+ [].forEach.call(document.querySelectorAll('[data-k]'),function(e){e.textContent=t[e.dataset.k]});
+ $('svg').setAttribute('aria-label',t.aria);
+ $('h1').textContent=t.h1;$('rs').textContent=t.reset;
+ [].forEach.call(document.querySelectorAll('.seg button'),function(b){var on=b.dataset.lang==lang;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});
+ if(cur>0)showStep(cur);else showIntro();
+ setCount(unN);setBtn();
+}
+[].forEach.call(document.querySelectorAll('.seg button'),function(b){b.onclick=function(){lang=b.dataset.lang;applyLang();}});
+function init(){
+ cur=0;qItems=[];busy=false;
+ M.forEach(function(m){put(m,205,236);vis(m,0)});
+ [eS,eOk,eAck,eTag,eGh].forEach(function(e){vis(e,0)});
+ put(eS,872,431);put(eOk,830,398);put(eAck,740,262);put(eTag,HX,211);put(eGh,623,290);
+ put(ePm,HX,HY);face(1);ePm.classList.remove('walk');pmBack=Promise.resolve();
+ act();wire();setCount();applyLang();
+ $('nx').disabled=false;$('rs').disabled=false;
+}
+$('nx').onclick=async function(){
+ if(busy)return;
+ if(cur>=steps.length){init();return;}
+ busy=true;$('nx').disabled=true;
+ var s=steps[cur];cur++;showStep(cur);
+ await s.run();
+ await pmBack;
+ busy=false;$('nx').disabled=false;setBtn();
+};
+$('rs').onclick=function(){
+ if(busy){location.reload();return;}
+ init();
+};
+init();
+</script>
+</body>
+</html>
