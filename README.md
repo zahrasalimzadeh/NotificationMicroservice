@@ -190,3 +190,12 @@ Consumer به صف وصل است (Consumers: 1) و صف بعد از پردازش
 
 - برای ارسال واقعی پیامک، حساب sms.ir باید اعتبار کافی داشته باشد. بدون اعتبار، sms.ir کد `102` (اعتبار کافی نیست) برمی‌گرداند، ولی مسیر RabbitMQ همچنان درست کار می‌کند.
 - نام Exchange و Queue باید در CoreBanking و در این سرویس یکسان باشد.
+
+---
+
+# 👩‍💻 Developer | توسعه‌دهنده
+
+**Zahra Salimzadeh**
+
+- LinkedIn: <https://www.linkedin.com/in/zahra-salimzadeh-5767582ab/>
+- Email: <zahrasalimzadeh7@gmail.com>
