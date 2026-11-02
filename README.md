@@ -38,7 +38,15 @@ The consumer service of the CoreBanking project. It reads notification messages 
 
 [![Architecture diagram](https://github.com/zahrasalimzadeh/NotificationMicroservice/raw/main/docs/diagram.jpg)](https://github.com/zahrasalimzadeh/NotificationMicroservice/blob/main/docs/diagram.jpg)
 
-[Open the interactive diagram | باز کردن نمودار تعاملی](https://zahrasalimzadeh.github.io/NotificationMicroservice/diagram.html)
+Want to see it step by step? Click the image below (it has a Persian / English switch):
+
+<div dir="rtl">
+
+‏می‌خواهید قدم‌به‌قدم ببینید؟ روی تصویر زیر کلیک کنید (دکمه‌ی فارسی / English دارد):
+
+</div>
+
+[![Interactive diagram](docs/diagram-preview.png)](https://zahrasalimzadeh.github.io/NotificationMicroservice/diagram.html)
 
 1. CoreBanking publishes a message (`phone`, `content`) to `notification-exchange`.
 2. The direct exchange routes it with the key `notification` to `notification-queue`.
@@ -100,6 +108,7 @@ NotificationMicroservice/
 │
 ├── docs/
 │   ├── diagram.html
+│   ├── diagram-preview.png
 │   ├── diagram.jpg
 │   ├── queue-empty.png.jpg
 │   ├── queue-ready.png
