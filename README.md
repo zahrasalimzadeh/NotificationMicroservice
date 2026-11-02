@@ -4,7 +4,7 @@ The consumer service of the CoreBanking project. It reads notification messages 
 
 <div dir="rtl">
 
-‏سرویس مصرف‌کننده (Consumer‏) پروژه‌ی CoreBanking‏. این سرویس پیام‌های اعلان را از RabbitMQ‏ می‌خواند و از طریق API‏ سایت sms.ir‏ به صورت پیامک ارسال می‌کند.
+⁧سرویس مصرف‌کننده (Consumer‏) پروژه‌ی CoreBanking‏. این سرویس پیام‌های اعلان را از RabbitMQ‏ می‌خواند و از طریق API‏ سایت sms.ir‏ به صورت پیامک ارسال می‌کند.⁩
 
 </div>
 
