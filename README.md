@@ -4,7 +4,7 @@ The consumer service of the CoreBanking project. It reads notification messages 
 
 <div dir="rtl">
 
-‏سرویس مصرف‌کننده (Consumer) پروژه‌ی CoreBanking. این سرویس پیام‌های اعلان را از RabbitMQ می‌خواند و از طریق API سایت sms.ir به صورت پیامک ارسال می‌کند.
+‏سرویس مصرف‌کننده (Consumer‏) پروژه‌ی CoreBanking‏. این سرویس پیام‌های اعلان را از RabbitMQ‏ می‌خواند و از طریق API‏ سایت sms.ir‏ به صورت پیامک ارسال می‌کند.
 
 </div>
 
@@ -78,7 +78,7 @@ If this service is stopped, messages stay in the queue until it starts again.
 | Field   | Description             | توضیح                 |
 |---------|-------------------------|-----------------------|
 | phone   | Receiver mobile number  | شماره‌ی موبایل گیرنده |
-| content | Verification code (OTP) | کد تأیید (OTP)        |
+| content | Verification code (OTP) | ⁧کد تأیید (OTP)⁩        |
 
 ---
 
@@ -122,10 +122,10 @@ NotificationMicroservice/
 
 | File                             | Responsibility                       | وظیفه                              |
 |----------------------------------|--------------------------------------|------------------------------------|
-| `main.py`                        | Wires everything and starts consumer | اتصال بخش‌ها و شروع کار Consumer   |
-| `notification_consumer.py`       | RabbitMQ connection and consuming    | اتصال به RabbitMQ و دریافت پیام‌ها |
+| `main.py`                        | Wires everything and starts consumer | ⁧اتصال بخش‌ها و شروع کار Consumer⁩   |
+| `notification_consumer.py`       | RabbitMQ connection and consuming    | ⁧اتصال به RabbitMQ و دریافت پیام‌ها⁩ |
 | `notification_business_logic.py` | Handles each received message        | پردازش هر پیام دریافتی             |
-| `sms_service.py`                 | HTTP calls to sms.ir                 | ارسال درخواست HTTP به sms.ir       |
+| `sms_service.py`                 | HTTP calls to sms.ir                 | ⁧ارسال درخواست HTTP به sms.ir⁩       |
 
 ---
 
@@ -141,13 +141,13 @@ Copy `.env.example` to `.env` and fill in the values. The `.env` file is ignored
 
 | Variable                | Description             | توضیح                        |
 |-------------------------|-------------------------|------------------------------|
-| `RABBITMQ_HOST`         | RabbitMQ server address | آدرس سرور RabbitMQ           |
-| `RABBITMQ_PORT`         | RabbitMQ port (5672)    | پورت RabbitMQ (معمولاً 5672) |
-| `RABBITMQ_USERNAME`     | RabbitMQ username       | نام کاربری RabbitMQ          |
-| `RABBITMQ_PASSWORD`     | RabbitMQ password       | رمز عبور RabbitMQ            |
-| `RABBITMQ_VIRTUAL_HOST` | RabbitMQ virtual host   | Virtual Host در RabbitMQ     |
-| `SMSIR_API_KEY`         | sms.ir API key          | کلید API سایت sms.ir         |
-| `SMSIR_LINE_NUMBER`     | sms.ir line number      | شماره‌ی خط sms.ir            |
+| `RABBITMQ_HOST`         | RabbitMQ server address | ⁧آدرس سرور RabbitMQ⁩           |
+| `RABBITMQ_PORT`         | RabbitMQ port (5672)    | ⁧پورت RabbitMQ (معمولاً 5672)⁩ |
+| `RABBITMQ_USERNAME`     | RabbitMQ username       | ⁧نام کاربری RabbitMQ⁩          |
+| `RABBITMQ_PASSWORD`     | RabbitMQ password       | ⁧رمز عبور RabbitMQ⁩            |
+| `RABBITMQ_VIRTUAL_HOST` | RabbitMQ virtual host   | ⁧Virtual Host در RabbitMQ⁩     |
+| `SMSIR_API_KEY`         | sms.ir API key          | ⁧کلید API سایت sms.ir⁩         |
+| `SMSIR_LINE_NUMBER`     | sms.ir line number      | ⁧شماره‌ی خط sms.ir⁩            |
 
 ---
 
@@ -179,7 +179,7 @@ cd NotificationMicroservice
 pip install -r requirements.txt
 ```
 
-**4. Create your `.env` file and fill in the values | ساخت فایل `.env` و پر کردن مقدارها**
+**4. Create your `.env` file and fill in the values | ⁧ساخت فایل `.env` و پر کردن مقدارها⁩**
 
 ```
 copy .env.example .env
@@ -203,7 +203,7 @@ The service keeps running and waits for new messages. Start CoreBanking and log 
 
 # 🎥 Demo | دمو
 
-### RabbitMQ Dashboard | داشبورد RabbitMQ
+### RabbitMQ Dashboard | ⁧داشبورد RabbitMQ⁩
 
 **1. RabbitMQ is running and no queue exists yet. The queue is created automatically when the application starts.**
 
