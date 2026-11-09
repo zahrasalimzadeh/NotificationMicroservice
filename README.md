@@ -54,8 +54,6 @@ Want to see it step by step? Click the image below (it has a Persian / English s
 
 If this service is stopped, messages stay in the queue until it starts again.
 
-> **Note:** if sending the SMS fails (for example sms.ir cannot be reached), the message is still acknowledged and removed from the queue, so that code is lost. The user logs in again to receive a new code.
-
 <div dir="rtl">
 
 1. ‏CoreBanking یک پیام (`phone` و `content`) به `notification-exchange` می‌فرستد.
@@ -63,8 +61,6 @@ If this service is stopped, messages stay in the queue until it starts again.
 3. ‏این سرویس پیام را از صف برمی‌دارد، پیامک را به sms.ir می‌فرستد و پیام را تأیید (Ack) می‌کند.
 
 ‏اگر این سرویس خاموش باشد، پیام‌ها در صف می‌مانند تا سرویس دوباره روشن شود.
-
-‏**نکته:** اگر ارسال پیامک شکست بخورد (مثلاً اتصال به sms.ir برقرار نباشد)، پیام باز هم تأیید (Ack) و از صف پاک می‌شود و آن کد از بین می‌رود. کاربر دوباره وارد می‌شود تا کد جدید بگیرد.
 
 </div>
 
@@ -110,10 +106,6 @@ NotificationMicroservice/
 │       ├── notification_consumer.py
 │       └── sms_service.py
 │
-├── tests/
-│   ├── __init__.py
-│   └── test_notification_business_logic.py
-│
 ├── docs/
 │   ├── diagram.html
 │   ├── diagram-preview.png
@@ -156,7 +148,6 @@ Copy `.env.example` to `.env` and fill in the values. The `.env` file is ignored
 | `RABBITMQ_VIRTUAL_HOST` | RabbitMQ virtual host   | ⁧Virtual Host در RabbitMQ⁩     |
 | `SMSIR_API_KEY`         | sms.ir API key          | ⁧کلید API سایت sms.ir⁩         |
 | `SMSIR_LINE_NUMBER`     | sms.ir line number      | ⁧شماره‌ی خط sms.ir⁩            |
-| `SMSIR_TEMPLATE_ID`     | sms.ir verify template id | ⁧شماره‌ی قالب پیامک در sms.ir⁩   |
 
 ---
 
@@ -201,20 +192,6 @@ python main.py
 ```
 
 The service keeps running and waits for new messages. Start CoreBanking and log in to send a message.
-
-**6. Run the tests | اجرای تست‌ها**
-
-```
-python -m unittest discover -s tests -t .
-```
-
-The tests use a fake SMS service, so no real SMS is sent.
-
-<div dir="rtl">
-
-‏تست‌ها از یک سرویس پیامک ساختگی استفاده می‌کنند، پس هیچ پیامک واقعی فرستاده نمی‌شود.
-
-</div>
 
 <div dir="rtl">
 
