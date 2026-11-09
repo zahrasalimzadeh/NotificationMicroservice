@@ -1,35 +1,52 @@
 # 🔔 NotificationMicroservice | میکروسرویس اعلان
 
 The consumer service of the CoreBanking project. It reads notification messages from RabbitMQ and sends them as SMS through the sms.ir API.
-سرویس مصرف‌کننده (Consumer) پروژه‌ی CoreBanking. این سرویس پیام‌های اعلان را از RabbitMQ می‌خواند و از طریق API سایت sms.ir به صورت پیامک ارسال می‌کند.
+
+<div dir="rtl">
+
+⁧سرویس مصرف‌کننده (⁦Consumer⁩) پروژه‌ی ⁦CoreBanking⁩. این سرویس پیام‌های اعلان را از ⁦RabbitMQ⁩ می‌خواند و از طریق ⁦API⁩ سایت ⁦sms.ir⁩ به صورت پیامک ارسال می‌کند.⁩
+
+</div>
 
 ---
 
 # 📌 Features | امکانات
 
-✅ Consumes messages from a RabbitMQ queue  
-✅ Direct exchange with routing key  
-✅ Sends SMS through the sms.ir HTTP API  
-✅ Manual message acknowledgement  
-✅ Messages stay in the queue while the service is stopped  
-✅ Layered structure (Services / Business Logic)  
-✅ Secrets stored in a `.env` file
+- ✅ Consumes messages from a RabbitMQ queue
+- ✅ Direct exchange with routing key
+- ✅ Sends SMS through the sms.ir HTTP API
+- ✅ Manual message acknowledgement
+- ✅ Messages stay in the queue while the service is stopped
+- ✅ Layered structure (Services / Business Logic)
+- ✅ Secrets stored in a `.env` file
 
-✅ دریافت پیام از صف RabbitMQ  
-✅ استفاده از Exchange نوع Direct با Routing Key  
-✅ ارسال پیامک با API سایت sms.ir  
-✅ تأیید دستی پیام‌ها (Manual Ack)  
-✅ ماندن پیام‌ها در صف وقتی سرویس خاموش است  
-✅ ساختار لایه‌بندی‌شده (Services / Business Logic)  
-✅ نگهداری رمزها و کلیدها در فایل `.env`
+<div dir="rtl">
+
+- ‏✅ دریافت پیام از صف RabbitMQ
+- ‏✅ استفاده از Exchange نوع Direct با Routing Key
+- ‏✅ ارسال پیامک با API سایت sms.ir
+- ‏✅ تأیید دستی پیام‌ها (Manual Ack)
+- ‏✅ ماندن پیام‌ها در صف وقتی سرویس خاموش است
+- ‏✅ ساختار لایه‌بندی‌شده (Services / Business Logic)
+- ‏✅ نگهداری رمزها و کلیدها در فایل `.env`
+
+</div>
 
 ---
 
 # 🏗 Architecture | معماری
 
-![Architecture diagram](diagram.jpg)
+[![Architecture diagram](https://github.com/zahrasalimzadeh/NotificationMicroservice/raw/main/docs/diagram.jpg)](https://github.com/zahrasalimzadeh/NotificationMicroservice/blob/main/docs/diagram.jpg)
 
-[Open the interactive diagram | باز کردن نمودار تعاملی](https://zahrasalimzadeh.github.io/NotificationMicroservice/diagram.html)
+Want to see it step by step? Click the image below (it has a Persian / English switch):
+
+<div dir="rtl">
+
+‏می‌خواهید قدم‌به‌قدم ببینید؟ روی تصویر زیر کلیک کنید (دکمه‌ی فارسی / English دارد):
+
+</div>
+
+[![Interactive diagram](docs/diagram-preview.png)](https://zahrasalimzadeh.github.io/NotificationMicroservice/diagram.html)
 
 1. CoreBanking publishes a message (`phone`, `content`) to `notification-exchange`.
 2. The direct exchange routes it with the key `notification` to `notification-queue`.
@@ -37,27 +54,35 @@ The consumer service of the CoreBanking project. It reads notification messages 
 
 If this service is stopped, messages stay in the queue until it starts again.
 
-۱. CoreBanking یک پیام (`phone` و `content`) به `notification-exchange` می‌فرستد.  
-۲. Exchange از نوع Direct پیام را با کلید `notification` به `notification-queue` می‌رساند.  
-۳. این سرویس پیام را از صف برمی‌دارد، پیامک را به sms.ir می‌فرستد و پیام را تأیید (Ack) می‌کند.
+> **Note:** if sending the SMS fails (for example sms.ir cannot be reached), the message is still acknowledged and removed from the queue, so that code is lost. The user logs in again to receive a new code.
 
-اگر این سرویس خاموش باشد، پیام‌ها در صف می‌مانند تا سرویس دوباره روشن شود.
+<div dir="rtl">
+
+1. ‏CoreBanking یک پیام (`phone` و `content`) به `notification-exchange` می‌فرستد.
+2. ‏Exchange از نوع Direct پیام را با کلید `notification` به `notification-queue` می‌رساند.
+3. ‏این سرویس پیام را از صف برمی‌دارد، پیامک را به sms.ir می‌فرستد و پیام را تأیید (Ack) می‌کند.
+
+‏اگر این سرویس خاموش باشد، پیام‌ها در صف می‌مانند تا سرویس دوباره روشن شود.
+
+‏**نکته:** اگر ارسال پیامک شکست بخورد (مثلاً اتصال به sms.ir برقرار نباشد)، پیام باز هم تأیید (Ack) و از صف پاک می‌شود و آن کد از بین می‌رود. کاربر دوباره وارد می‌شود تا کد جدید بگیرد.
+
+</div>
 
 ---
 
 # 📨 Message Format | قالب پیام
 
-```json
+```
 {
   "phone": "09120000000",
   "content": "12345"
 }
 ```
 
-| Field   | Description                 | توضیح                    |
-| ------- | --------------------------- | ------------------------ |
-| phone   | Receiver mobile number      | شماره‌ی موبایل گیرنده    |
-| content | Verification code (OTP)     | کد تأیید (OTP)           |
+| Field   | Description             | توضیح                 |
+|---------|-------------------------|-----------------------|
+| phone   | Receiver mobile number  | شماره‌ی موبایل گیرنده |
+| content | Verification code (OTP) | ⁧کد تأیید (OTP)⁩        |
 
 ---
 
@@ -85,101 +110,153 @@ NotificationMicroservice/
 │       ├── notification_consumer.py
 │       └── sms_service.py
 │
+├── tests/
+│   ├── __init__.py
+│   └── test_notification_business_logic.py
+│
 ├── docs/
-│   └── diagram.html
+│   ├── diagram.html
+│   ├── diagram-preview.png
+│   ├── diagram.jpg
+│   ├── queue-empty.png.jpg
+│   ├── queue-ready.png
+│   └── rabbitmq-idle.png
 │
 ├── .env.example
 ├── .gitignore
-├── diagram.jpg
 ├── main.py
-├── rabbitmq-idle.png
-├── queue-ready.png
-├── queue-empty.png.jpg
 └── requirements.txt
 ```
 
-| File                              | Responsibility                       | وظیفه                                  |
-| --------------------------------- | ------------------------------------ | -------------------------------------- |
-| `main.py`                         | Wires everything and starts consumer | اتصال بخش‌ها و شروع کار Consumer       |
-| `notification_consumer.py`        | RabbitMQ connection and consuming    | اتصال به RabbitMQ و دریافت پیام‌ها     |
-| `notification_business_logic.py`  | Handles each received message        | پردازش هر پیام دریافتی                 |
-| `sms_service.py`                  | HTTP calls to sms.ir                 | ارسال درخواست HTTP به sms.ir           |
+| File                             | Responsibility                       | وظیفه                              |
+|----------------------------------|--------------------------------------|------------------------------------|
+| `main.py`                        | Wires everything and starts consumer | ⁧اتصال بخش‌ها و شروع کار Consumer⁩   |
+| `notification_consumer.py`       | RabbitMQ connection and consuming    | ⁧اتصال به RabbitMQ و دریافت پیام‌ها⁩ |
+| `notification_business_logic.py` | Handles each received message        | پردازش هر پیام دریافتی             |
+| `sms_service.py`                 | HTTP calls to sms.ir                 | ⁧ارسال درخواست HTTP به sms.ir⁩       |
 
 ---
 
 # ⚙️ Environment Variables | متغیرهای محیطی
 
 Copy `.env.example` to `.env` and fill in the values. The `.env` file is ignored by Git and must never be uploaded.
-فایل `.env.example` را به `.env` کپی کنید و مقدارها را پر کنید. فایل `.env` توسط Git نادیده گرفته می‌شود و هرگز نباید آپلود شود.
 
-| Variable                | Description                | توضیح                          |
-| ----------------------- | -------------------------- | ------------------------------ |
-| `RABBITMQ_HOST`         | RabbitMQ server address    | آدرس سرور RabbitMQ             |
-| `RABBITMQ_PORT`         | RabbitMQ port (5672)       | پورت RabbitMQ (معمولاً 5672)   |
-| `RABBITMQ_USERNAME`     | RabbitMQ username          | نام کاربری RabbitMQ            |
-| `RABBITMQ_PASSWORD`     | RabbitMQ password          | رمز عبور RabbitMQ              |
-| `RABBITMQ_VIRTUAL_HOST` | RabbitMQ virtual host      | Virtual Host در RabbitMQ       |
-| `SMSIR_API_KEY`         | sms.ir API key             | کلید API سایت sms.ir           |
-| `SMSIR_LINE_NUMBER`     | sms.ir line number         | شماره‌ی خط sms.ir              |
+<div dir="rtl">
+
+‏فایل `.env.example` را به `.env` کپی کنید و مقدارها را پر کنید. فایل `.env` توسط Git نادیده گرفته می‌شود و هرگز نباید آپلود شود.
+
+</div>
+
+| Variable                | Description             | توضیح                        |
+|-------------------------|-------------------------|------------------------------|
+| `RABBITMQ_HOST`         | RabbitMQ server address | ⁧آدرس سرور RabbitMQ⁩           |
+| `RABBITMQ_PORT`         | RabbitMQ port (5672)    | ⁧پورت RabbitMQ (معمولاً 5672)⁩ |
+| `RABBITMQ_USERNAME`     | RabbitMQ username       | ⁧نام کاربری RabbitMQ⁩          |
+| `RABBITMQ_PASSWORD`     | RabbitMQ password       | ⁧رمز عبور RabbitMQ⁩            |
+| `RABBITMQ_VIRTUAL_HOST` | RabbitMQ virtual host   | ⁧Virtual Host در RabbitMQ⁩     |
+| `SMSIR_API_KEY`         | sms.ir API key          | ⁧کلید API سایت sms.ir⁩         |
+| `SMSIR_LINE_NUMBER`     | sms.ir line number      | ⁧شماره‌ی خط sms.ir⁩            |
+| `SMSIR_TEMPLATE_ID`     | sms.ir verify template id | ⁧شماره‌ی قالب پیامک در sms.ir⁩   |
 
 ---
 
 # 🚀 How To Run | نحوه اجرا
 
-Make sure RabbitMQ is installed and running, then clone the repository:
-مطمئن شوید RabbitMQ نصب و روشن است، سپس پروژه را کلون کنید:
+Make sure RabbitMQ is installed and running.
+
+<div dir="rtl">
+
+‏مطمئن شوید RabbitMQ نصب و روشن است.
+
+</div>
+
+**1. Clone the repository | کلون کردن پروژه**
 
 ```
 git clone https://github.com/zahrasalimzadeh/NotificationMicroservice.git
 ```
 
-Open the project folder:
+**2. Open the project folder | باز کردن پوشه‌ی پروژه**
 
 ```
 cd NotificationMicroservice
 ```
 
-Install the requirements:
+**3. Install the requirements | نصب پیش‌نیازها**
 
 ```
 pip install -r requirements.txt
 ```
 
-Create your `.env` file from the example and fill in the values:
+**4. Create your `.env` file and fill in the values | ⁧ساخت فایل `.env` و پر کردن مقدارها⁩**
 
 ```
 copy .env.example .env
 ```
 
-Run the service:
+**5. Run the service | اجرای سرویس**
 
 ```
 python main.py
 ```
 
 The service keeps running and waits for new messages. Start CoreBanking and log in to send a message.
-سرویس همیشه روشن می‌ماند و منتظر پیام جدید است. برای ارسال پیام، CoreBanking را اجرا کنید و لاگین کنید.
+
+**6. Run the tests | اجرای تست‌ها**
+
+```
+python -m unittest discover -s tests -t .
+```
+
+The tests use a fake SMS service, so no real SMS is sent.
+
+<div dir="rtl">
+
+‏تست‌ها از یک سرویس پیامک ساختگی استفاده می‌کنند، پس هیچ پیامک واقعی فرستاده نمی‌شود.
+
+</div>
+
+<div dir="rtl">
+
+‏سرویس همیشه روشن می‌ماند و منتظر پیام جدید است. برای ارسال پیام، CoreBanking را اجرا کنید و لاگین کنید.
+
+</div>
 
 ---
 
 # 🎥 Demo | دمو
 
-### RabbitMQ Dashboard | داشبورد RabbitMQ
+### RabbitMQ Dashboard | ⁧داشبورد RabbitMQ⁩
 
 **1. RabbitMQ is running and no queue exists yet. The queue is created automatically when the application starts.**
-RabbitMQ روشن است و هنوز صفی وجود ندارد. صف به صورت خودکار هنگام اجرای برنامه ساخته می‌شود.
 
-![RabbitMQ idle](rabbitmq-idle.png)
+<div dir="rtl">
+
+‏RabbitMQ روشن است و هنوز صفی وجود ندارد. صف به صورت خودکار هنگام اجرای برنامه ساخته می‌شود.
+
+</div>
+
+[![RabbitMQ idle](https://github.com/zahrasalimzadeh/NotificationMicroservice/raw/main/docs/rabbitmq-idle.png)](https://github.com/zahrasalimzadeh/NotificationMicroservice/blob/main/docs/rabbitmq-idle.png)
 
 **2. A message is waiting in `notification-queue` (consumer stopped).**
-یک پیام در `notification-queue` منتظر است (Consumer خاموش).
 
-![Queue with a waiting message](queue-ready.png)
+<div dir="rtl">
+
+‏یک پیام در `notification-queue` منتظر است (Consumer خاموش).
+
+</div>
+
+[![Queue with a waiting message](https://github.com/zahrasalimzadeh/NotificationMicroservice/raw/main/docs/queue-ready.png)](https://github.com/zahrasalimzadeh/NotificationMicroservice/blob/main/docs/queue-ready.png)
 
 **3. The consumer is connected (Consumers: 1) and the queue is empty after the message was processed.**
-Consumer به صف وصل است (Consumers: 1) و صف بعد از پردازش پیام خالی است.
 
-![Queue empty](queue-empty.png.jpg)
+<div dir="rtl">
+
+‏Consumer به صف وصل است (Consumers: 1) و صف بعد از پردازش پیام خالی است.
+
+</div>
+
+[![Queue empty](https://github.com/zahrasalimzadeh/NotificationMicroservice/raw/main/docs/queue-empty.png.jpg)](https://github.com/zahrasalimzadeh/NotificationMicroservice/blob/main/docs/queue-empty.png.jpg)
 
 ---
 
@@ -188,8 +265,12 @@ Consumer به صف وصل است (Consumers: 1) و صف بعد از پردازش
 - An sms.ir account with enough credit is required to actually deliver SMS. Without credit, sms.ir responds with status `102` (insufficient credit), while the RabbitMQ flow still works.
 - The queue and exchange names must be the same in CoreBanking and in this service.
 
-- برای ارسال واقعی پیامک، حساب sms.ir باید اعتبار کافی داشته باشد. بدون اعتبار، sms.ir کد `102` (اعتبار کافی نیست) برمی‌گرداند، ولی مسیر RabbitMQ همچنان درست کار می‌کند.
-- نام Exchange و Queue باید در CoreBanking و در این سرویس یکسان باشد.
+<div dir="rtl">
+
+- ‏برای ارسال واقعی پیامک، حساب sms.ir باید اعتبار کافی داشته باشد. بدون اعتبار، sms.ir کد `102` (اعتبار کافی نیست) برمی‌گرداند، ولی مسیر RabbitMQ همچنان درست کار می‌کند.
+- ‏نام Exchange و Queue باید در CoreBanking و در این سرویس یکسان باشد.
+
+</div>
 
 ---
 
@@ -197,5 +278,5 @@ Consumer به صف وصل است (Consumers: 1) و صف بعد از پردازش
 
 **Zahra Salimzadeh**
 
-- LinkedIn: <https://www.linkedin.com/in/zahra-salimzadeh-5767582ab/>
-- Email: <zahrasalimzadeh7@gmail.com>
+- LinkedIn: [https://www.linkedin.com/in/zahra-salimzadeh-5767582ab/](https://www.linkedin.com/in/zahra-salimzadeh-5767582ab/)
+- Email: zahrasalimzadeh7@gmail.com

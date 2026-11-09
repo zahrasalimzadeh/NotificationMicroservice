@@ -6,7 +6,7 @@ class SmsService:
     def __init__(self):
         self.api_key = os.getenv("SMSIR_API_KEY")
         self.line_number = os.getenv("SMSIR_LINE_NUMBER")
-        self.template_id = 672547
+        self.template_id = int(os.getenv("SMSIR_TEMPLATE_ID"))
         self.base_url = "https://api.sms.ir/v1/send/verify"
 
     def send_otp(self, mobile: str, code: str) -> bool:

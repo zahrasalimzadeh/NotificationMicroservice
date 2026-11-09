@@ -3,8 +3,8 @@ from Common.Services.sms_service import SmsService
 
 
 class NotificationBusinessLogic:
-    def __init__(self):
-        self.sms_service = SmsService()
+    def __init__(self, sms_service=None):
+        self.sms_service = sms_service or SmsService()
 
     def process(self, body):
         dictionary = json.loads(body)
