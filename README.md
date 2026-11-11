@@ -54,6 +54,8 @@ Want to see it step by step? Click the image below (it has a Persian / English s
 
 If this service is stopped, messages stay in the queue until it starts again.
 
+This service has no database. It only reads messages from RabbitMQ and sends them to sms.ir; it does not store anything.
+
 > **Note:** if sending the SMS fails (for example sms.ir cannot be reached), the message is still acknowledged and removed from the queue, so that code is lost. The user logs in again to receive a new code.
 
 <div dir="rtl">
@@ -63,6 +65,8 @@ If this service is stopped, messages stay in the queue until it starts again.
 3. ‏این سرویس پیام را از صف برمی‌دارد، پیامک را به sms.ir می‌فرستد و پیام را تأیید (Ack) می‌کند.
 
 ‏اگر این سرویس خاموش باشد، پیام‌ها در صف می‌مانند تا سرویس دوباره روشن شود.
+
+‏این سرویس دیتابیس ندارد. فقط پیام‌ها را از RabbitMQ می‌خواند و به sms.ir می‌فرستد و چیزی را ذخیره نمی‌کند.
 
 ‏**نکته:** اگر ارسال پیامک شکست بخورد (مثلاً اتصال به sms.ir برقرار نباشد)، پیام باز هم تأیید (Ack) و از صف پاک می‌شود و آن کد از بین می‌رود. کاربر دوباره وارد می‌شود تا کد جدید بگیرد.
 
