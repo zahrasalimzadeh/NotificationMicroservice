@@ -125,6 +125,7 @@ NotificationMicroservice/
 ├── .env.example
 ├── .gitignore
 ├── main.py
+├── README.md
 └── requirements.txt
 ```
 
@@ -226,6 +227,21 @@ The tests use a fake SMS service, so no real SMS is sent.
 
 # 🎥 Demo | دمو
 
+**Watch on LinkedIn:**
+
+<div dir="rtl">
+
+‏**تماشا در لینکدین:**
+
+</div>
+
+<table>
+<tr><th>Video</th><th>ویدیو</th><th>Link</th></tr>
+<tr><td dir="ltr">Receiving the OTP code</td><td dir="rtl">دریافت کد OTP</td><td><a href="https://www.linkedin.com/feed/update/urn:li:activity:7516611332004061185/">Watch on LinkedIn</a></td></tr>
+<tr><td dir="ltr">Full demo of Core Banking</td><td dir="rtl">دموی کامل Core Banking</td><td><a href="https://www.linkedin.com/feed/update/urn:li:activity:7526002152469700609/">Watch on LinkedIn</a></td></tr>
+<tr><td dir="ltr">Full demo of Bank Mobile App</td><td dir="rtl">دموی کامل 𝗕𝗮𝗻𝗸 𝗠𝗼𝗯𝗶𝗹𝗲 𝗔𝗽𝗽</td><td><a href="https://www.linkedin.com/feed/update/urn:li:activity:7526047492837167104/">Watch on LinkedIn</a></td></tr>
+</table>
+
 ### RabbitMQ Dashboard | ⁧داشبورد RabbitMQ⁩
 
 **1. RabbitMQ is running and no queue exists yet. The queue is created automatically when the application starts.**
@@ -269,6 +285,20 @@ The tests use a fake SMS service, so no real SMS is sent.
 
 - ‏برای ارسال واقعی پیامک، حساب sms.ir باید اعتبار کافی داشته باشد. بدون اعتبار، sms.ir کد `102` (اعتبار کافی نیست) برمی‌گرداند، ولی مسیر RabbitMQ همچنان درست کار می‌کند.
 - ‏نام Exchange و Queue باید در CoreBanking و در این سرویس یکسان باشد.
+
+</div>
+
+---
+
+# 🔗 Related repositories | مخزن‌های مرتبط
+
+- [CoreBanking](https://github.com/zahrasalimzadeh/CoreBanking): the desktop application and the REST API that creates the codes and publishes the messages
+- [BankMobileApp](https://github.com/zahrasalimzadeh/BankMobileApp): the mobile app (Kivy) whose login starts the flow
+
+<div dir="rtl">
+
+- ‏[CoreBanking](https://github.com/zahrasalimzadeh/CoreBanking): برنامه‌ی دسکتاپ و REST API که کد را می‌سازد و پیام را منتشر می‌کند
+- ‏[BankMobileApp](https://github.com/zahrasalimzadeh/BankMobileApp): اپلیکیشن موبایل (Kivy) که ورود مشتری در آن جریان را شروع می‌کند
 
 </div>
 
